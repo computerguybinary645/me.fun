@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jump Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: grey;
+        }
+        .game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background-color: grey; /* Changed to grey */
+        }
+        .player {
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+            width: 50px;
+            height: 50px;
+            background-color: #ff0000;
+        }
+        .obstacle {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 50px;
+            height: 50px;
+            background-color: #000000;
+            animation: moveObstacle 2s linear infinite;
+        }
+        h1{
+            text-align: center;
+            color: #ff0000;
+        }
+        @keyframes moveObstacle {
+            0% {
+                right: 0;
+            }
+            100% {
+                right: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="player" id="player"></div>
+        <div class="obstacle" id="obstacle"></div>
+    </div>
+    <h1>jump!</h1>
+
+    <script>
+        const player = document.getElementById('player');
+        const obstacle = document.getElementById('obstacle');
+        let isJumping = false;
+
+        function jump() {
+            if (isJumping) return;
+            isJumping = true;
+            let jumpHeight = 0;
+            const jumpInterval = setInterval(() => {
+                if (jumpHeight >= 150) {
+                    clearInterval(jumpInterval);
+                    const fallInterval = setInterval(() => {
+                        if (jumpHeight <= 0) {
+                            clearInterval(fallInterval);
+                            isJumping = false;
+                        } else {
+                            jumpHeight -= 10;
+                            player.style.bottom = jumpHeight + 'px';
+                        }
+                    }, 20);
+                } else {
+                    jumpHeight += 10;
+                    player.style.bottom = jumpHeight + 'px';
+                }
+            }, 20);
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'Space') {
+                jump();
+            }
+        });
+
+        function checkCollision() {
+            const playerRect = player.getBoundingClientRect();
+            const obstacleRect = obstacle.getBoundingClientRect();
+
+            if (
+                playerRect.right > obstacleRect.left &&
+                playerRect.left < obstacleRect.right &&
+                playerRect.bottom > obstacleRect.top &&
+                playerRect.top < obstacleRect.bottom
+            ) {
+                alert('Game Over!');
+                location.reload();
+            }
+        }
+
+        setInterval(checkCollision, 10);
+    </script>
+</body>
+</html>
